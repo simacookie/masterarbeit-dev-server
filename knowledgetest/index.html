@@ -31,7 +31,7 @@
         }
         
         .main-content {
-            text-align: center;
+            text-align: left;
             color: #1a1a1a;
             z-index: 2;
             background: rgba(255, 255, 255, 0.8);
@@ -40,8 +40,263 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 800px;
+            max-width: 1200px;
             width: 100%;
+        }
+        
+        .content-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .test-container {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .pool-section {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .pool-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        
+        .pool {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            min-height: 200px;
+        }
+        
+        .card {
+            padding: 0.75rem 1rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .card:hover {
+            border-color: #0f6cbf;
+            background: #eff6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:active {
+            cursor: grabbing;
+        }
+        
+        .card.dragging {
+            opacity: 0.5;
+        }
+        
+        .sequence-section {
+            flex: 2;
+            min-width: 400px;
+        }
+        
+        .sequence-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        
+        .sequence {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem 1rem 1rem 3rem;
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 0.5rem;
+            min-height: 200px;
+        }
+        
+        .pair-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            padding: 0.75rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            position: relative;
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+        
+        .pair-container:hover {
+            border-color: #0f6cbf;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pair-container.drag-over {
+            border-color: #0f6cbf;
+            background: #eff6ff;
+        }
+        
+        .pair-container.dragging-pair {
+            opacity: 0.5;
+        }
+        
+        .drop-zone {
+            min-height: 20px;
+            margin: 0.25rem 0;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            border: 2px dashed transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .drop-zone.active {
+            border-color: #0f6cbf;
+            background: #eff6ff;
+            min-height: 50px;
+            box-shadow: 0 0 0 3px rgba(15, 108, 191, 0.1);
+        }
+        
+        .drop-zone-indicator {
+            color: #0f6cbf;
+            font-size: 0.875rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        
+        .drop-zone.active .drop-zone-indicator {
+            opacity: 1;
+        }
+        
+        .drag-handle {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            color: #64748b;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+        
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+        
+        .socket {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: #f1f5f9;
+            border: 2px dashed #94a3b8;
+            border-radius: 0.375rem;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        .socket.has-content {
+            background: white;
+            border: 2px solid #0f6cbf;
+            color: #1a1a1a;
+        }
+        
+        .socket.empty {
+            background: #f1f5f9;
+            border: 2px dashed #94a3b8;
+        }
+        
+        .socket.drag-over {
+            background: #eff6ff !important;
+            border-color: #0f6cbf !important;
+            border-style: solid !important;
+            box-shadow: 0 0 0 3px rgba(15, 108, 191, 0.2);
+            transform: scale(1.02);
+        }
+        
+        .delete-pair-btn {
+            padding: 0.5rem;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        
+        .delete-pair-btn:hover {
+            background: #dc2626;
+        }
+        
+        .add-pair-btn {
+            padding: 0.75rem;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+        
+        .add-pair-btn:hover {
+            background: #059669;
+        }
+        
+        .result-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .result-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+        
+        .result-string {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: monospace;
+            color: #0f6cbf;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 0.375rem;
+            border: 2px solid #0f6cbf;
         }
         
         .title {
@@ -185,10 +440,128 @@
     <div id="app">
         <div class="container">
             <div class="main-content">
-                <h1 class="title">Wissenstest</h1>
-                <p class="subtitle">Intramuskuläre Injektion</p>
-                <p>{{ message }}</p>
-                <button class="btn btn-back" @click="goBack">Zurück zur Startseite</button>
+                <div class="content-header">
+                    <h1 class="title">Wissenstest</h1>
+                    <p class="subtitle">Intramuskuläre Injektion</p>
+                </div>
+                
+                <div class="test-container">
+                    <div class="pool-section">
+                        <div class="pool-title">Objekte (Nomen)</div>
+                        <div class="pool" @drop.prevent="onDrop($event, 'object')" @dragover.prevent @dragenter.prevent>
+                            <div 
+                                v-for="object in objects" 
+                                :key="object.id"
+                                class="card"
+                                draggable="true"
+                                @dragstart="onDragStart($event, 'object', object)"
+                                @dragend="onDragEnd">
+                                {{ object.label }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pool-section">
+                        <div class="pool-title">Aktionen (Verben)</div>
+                        <div class="pool" @drop.prevent="onDrop($event, 'verb')" @dragover.prevent @dragenter.prevent>
+                            <div 
+                                v-for="verb in verbs" 
+                                :key="verb.id"
+                                class="card"
+                                draggable="true"
+                                @dragstart="onDragStart($event, 'verb', verb)"
+                                @dragend="onDragEnd">
+                                {{ verb.label }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sequence-section">
+                        <div class="sequence-title">Prozess</div>
+                        <div class="sequence">
+                            <template v-for="(pair, pairIndex) in pairs" :key="pair.id">
+                                <!-- Drop Zone before each pair (except first) -->
+                                <div 
+                                    v-if="pairIndex > 0"
+                                    class="drop-zone"
+                                    :class="{ 'active': draggingPairIndex !== null && dropZoneIndex === pairIndex }"
+                                    @drop.prevent="onDropInZone($event, pairIndex)"
+                                    @dragover.prevent 
+                                    @dragenter.prevent="handleDropZoneEnter(pairIndex)"
+                                    @dragleave="handleDropZoneLeave">
+                                    <div class="drop-zone-indicator">↓ Hier einfügen</div>
+                                </div>
+                                
+                                <div 
+                                    class="pair-container"
+                                    :class="{ 
+                                        'drag-over': draggingOverPair === pairIndex && draggingPairIndex === null,
+                                        'dragging-pair': draggingPairIndex === pairIndex
+                                    }"
+                                    draggable="true"
+                                    @dragstart="onDragPairStart($event, pairIndex)"
+                                    @dragend="onDragPairEnd"
+                                    @drop.prevent="onDropInPair($event, pairIndex)"
+                                    @dragover.prevent 
+                                    @dragenter.prevent="handlePairDragEnter(pairIndex)"
+                                    @dragleave="handlePairDragLeave">
+                                    <div class="drag-handle" v-if="pair.object || pair.verb">⋮⋮</div>
+                                    <div 
+                                        class="socket"
+                                        :class="{
+                                            'has-content': pair.object,
+                                            'empty': !pair.object,
+                                            'drag-over': draggingOverSocket === `${pairIndex}-object` && draggingType === 'object' && draggingPairIndex === null
+                                        }"
+                                        @drop.prevent="onDropInSocket($event, pairIndex, 'object')"
+                                        @dragover.prevent 
+                                        @dragenter.prevent="handleSocketDragEnter(pairIndex, 'object')"
+                                        @dragleave="handleSocketDragLeave(`${pairIndex}-object`)">
+                                        <span v-if="pair.object">{{ pair.object.label }}</span>
+                                        <span v-else>Objekt</span>
+                                    </div>
+                                    <div 
+                                        class="socket"
+                                        :class="{
+                                            'has-content': pair.verb,
+                                            'empty': !pair.verb,
+                                            'drag-over': draggingOverSocket === `${pairIndex}-verb` && draggingType === 'verb' && draggingPairIndex === null
+                                        }"
+                                        @drop.prevent="onDropInSocket($event, pairIndex, 'verb')"
+                                        @dragover.prevent 
+                                        @dragenter.prevent="handleSocketDragEnter(pairIndex, 'verb')"
+                                        @dragleave="handleSocketDragLeave(`${pairIndex}-verb`)">
+                                        <span v-if="pair.verb">{{ pair.verb.label }}</span>
+                                        <span v-else>Verb</span>
+                                    </div>
+                                    <button class="delete-pair-btn" @click="deletePair(pairIndex)">×</button>
+                                </div>
+                            </template>
+                            
+                            <!-- Drop Zone at the end -->
+                            <div 
+                                class="drop-zone"
+                                :class="{ 'active': draggingPairIndex !== null && dropZoneIndex === pairs.length }"
+                                @drop.prevent="onDropInZone($event, pairs.length)"
+                                @dragover.prevent 
+                                @dragenter.prevent="handleDropZoneEnter(pairs.length)"
+                                @dragleave="handleDropZoneLeave">
+                                <div class="drop-zone-indicator">↓ Hier einfügen</div>
+                            </div>
+                            
+                            <button class="add-pair-btn" @click="addPair">+ Neues Paar hinzufügen</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-section">
+                    <div class="result-title">Sequenz:</div>
+                    <div class="result-string">{{ resultString || '(leer)' }}</div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn btn-back" @click="goBack">Zurück zur Startseite</button>
+                </div>
             </div>
             
             <div id="button-left">
@@ -207,13 +580,203 @@
         createApp({
             data() {
                 return {
-                    message: "Der Wissenstest wird hier implementiert."
+                    objects: [
+                        { id: 1, label: 'Hände', code: 'a' },
+                        { id: 2, label: 'Handschuhe', code: 'b' },
+                        { id: 3, label: 'Material', code: 'c' },
+                        { id: 4, label: 'Spritze', code: 'd' },
+                        { id: 5, label: 'Injektionsstelle', code: 'e' }
+                    ],
+                    verbs: [
+                        { id: 1, label: 'desinfizieren', code: 'A' },
+                        { id: 2, label: 'anziehen', code: 'B' },
+                        { id: 3, label: 'vorbereiten', code: 'C' },
+                        { id: 4, label: 'aufziehen', code: 'D' },
+                        { id: 5, label: 'desinfizieren', code: 'E' }
+                    ],
+                    pairs: [],
+                    draggingItem: null,
+                    draggingType: null,
+                    draggingOverPair: null,
+                    draggingPairIndex: null,
+                    draggingPairOverIndex: null,
+                    dropZoneIndex: null,
+                    draggingOverSocket: null
                 };
             },
+            computed: {
+                resultString() {
+                    if (this.pairs.length === 0) return '';
+                    
+                    let result = '';
+                    for (const pair of this.pairs) {
+                        if (pair.object) {
+                            result += pair.object.code;
+                        }
+                        if (pair.verb) {
+                            result += pair.verb.code;
+                        }
+                    }
+                    return result;
+                }
+            },
             methods: {
+                onDragStart(event, type, item) {
+                    this.draggingItem = item;
+                    this.draggingType = type;
+                    event.dataTransfer.effectAllowed = 'move';
+                    event.target.classList.add('dragging');
+                },
+                onDragEnd(event) {
+                    event.target.classList.remove('dragging');
+                    this.draggingItem = null;
+                    this.draggingType = null;
+                    this.draggingOverPair = null;
+                    this.draggingOverSocket = null;
+                },
+                onDrop(event, type) {
+                    // Drop in pool - do nothing, cards stay in pool
+                    event.preventDefault();
+                },
+                onDropInPair(event, pairIndex) {
+                    // Don't handle pair reordering here - use drop zones
+                    // Only handle dropping items into pair
+                    if (this.draggingItem && this.draggingType && this.draggingPairIndex === null) {
+                        const pair = this.pairs[pairIndex];
+                        if (this.draggingType === 'object') {
+                            // Clone the object
+                            pair.object = { ...this.draggingItem };
+                        } else if (this.draggingType === 'verb') {
+                            // Clone the verb
+                            pair.verb = { ...this.draggingItem };
+                        }
+                    }
+                    this.draggingOverPair = null;
+                },
+                handleSocketDragEnter(pairIndex, socketType) {
+                    // Only highlight if dragging matching type and not dragging a pair
+                    if (this.draggingPairIndex === null && 
+                        this.draggingType === socketType && 
+                        this.draggingItem) {
+                        this.draggingOverSocket = `${pairIndex}-${socketType}`;
+                    }
+                },
+                handleSocketDragLeave(socketId) {
+                    // Use timeout to prevent flickering when moving between elements
+                    setTimeout(() => {
+                        if (this.draggingOverSocket === socketId) {
+                            this.draggingOverSocket = null;
+                        }
+                    }, 10);
+                },
+                onDropInSocket(event, pairIndex, socketType) {
+                    // Prevent dropping if dragging a pair
+                    if (this.draggingPairIndex !== null) {
+                        event.preventDefault();
+                        return;
+                    }
+                    if (this.draggingItem && this.draggingType) {
+                        const pair = this.pairs[pairIndex];
+                        // Only allow dropping if types match
+                        if (socketType === 'object' && this.draggingType === 'object') {
+                            pair.object = { ...this.draggingItem };
+                        } else if (socketType === 'verb' && this.draggingType === 'verb') {
+                            pair.verb = { ...this.draggingItem };
+                        }
+                    }
+                    this.draggingOverPair = null;
+                    this.draggingOverSocket = null;
+                    event.stopPropagation(); // Prevent triggering pair drop
+                },
+                onDragPairStart(event, pairIndex) {
+                    // Only allow dragging if pair has content
+                    const pair = this.pairs[pairIndex];
+                    if (!pair.object && !pair.verb) {
+                        event.preventDefault();
+                        return;
+                    }
+                    this.draggingPairIndex = pairIndex;
+                    event.dataTransfer.effectAllowed = 'move';
+                    event.dataTransfer.setData('text/plain', pairIndex.toString());
+                },
+                onDragPairEnd() {
+                    this.draggingPairIndex = null;
+                    this.draggingPairOverIndex = null;
+                    this.dropZoneIndex = null;
+                },
+                handlePairDragEnter(pairIndex) {
+                    // Only highlight if not dragging a pair
+                    if (this.draggingPairIndex === null) {
+                        this.draggingOverPair = pairIndex;
+                    }
+                },
+                handlePairDragLeave() {
+                    // Only clear if not dragging a pair
+                    if (this.draggingPairIndex === null) {
+                        this.draggingOverPair = null;
+                    }
+                },
+                handleDropZoneEnter(zoneIndex) {
+                    if (this.draggingPairIndex !== null) {
+                        this.dropZoneIndex = zoneIndex;
+                    }
+                },
+                handleDropZoneLeave(event) {
+                    // Only clear if we're really leaving the drop zone
+                    const relatedTarget = event.relatedTarget;
+                    if (!relatedTarget || !event.currentTarget.contains(relatedTarget)) {
+                        // Small delay to prevent flickering
+                        setTimeout(() => {
+                            const elementBelow = document.elementFromPoint(event.clientX, event.clientY);
+                            if (!elementBelow || !elementBelow.closest('.drop-zone')) {
+                                this.dropZoneIndex = null;
+                            }
+                        }, 10);
+                    }
+                },
+                onDropInZone(event, targetIndex) {
+                    if (this.draggingPairIndex !== null) {
+                        const sourceIndex = this.draggingPairIndex;
+                        
+                        // Don't drop on itself or adjacent position
+                        if (sourceIndex === targetIndex || sourceIndex === targetIndex - 1) {
+                            this.draggingPairIndex = null;
+                            this.dropZoneIndex = null;
+                            return;
+                        }
+                        
+                        // Remove from source position
+                        const pair = this.pairs.splice(sourceIndex, 1)[0];
+                        
+                        // Adjust target index if source was before target
+                        let adjustedTargetIndex = targetIndex;
+                        if (sourceIndex < targetIndex) {
+                            adjustedTargetIndex = targetIndex - 1;
+                        }
+                        
+                        // Insert at target position
+                        this.pairs.splice(adjustedTargetIndex, 0, pair);
+                    }
+                    this.draggingPairIndex = null;
+                    this.dropZoneIndex = null;
+                },
+                addPair() {
+                    this.pairs.push({
+                        id: Date.now(),
+                        object: null,
+                        verb: null
+                    });
+                },
+                deletePair(index) {
+                    this.pairs.splice(index, 1);
+                },
                 goBack() {
                     window.location.href = '/';
                 }
+            },
+            mounted() {
+                // Initialize with one empty pair
+                this.addPair();
             }
         }).mount('#app');
     </script>
