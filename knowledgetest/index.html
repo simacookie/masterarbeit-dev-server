@@ -467,9 +467,8 @@
                         <div class="sequence-title">Prozess</div>
                         <div class="sequence">
                             <template v-for="(pair, pairIndex) in pairs" :key="pair.id">
-                                <!-- Drop Zone before each pair (except first) -->
+                                <!-- Drop Zone before each pair -->
                                 <div 
-                                    v-if="pairIndex > 0"
                                     class="drop-zone"
                                     :class="{ 'active': draggingPairIndex !== null && dropZoneIndex === pairIndex }"
                                     @drop.prevent="onDropInZone($event, pairIndex)"
