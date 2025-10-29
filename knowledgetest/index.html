@@ -121,7 +121,7 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            padding: 1rem 1rem 1rem 3rem;
+            padding: 1rem 1rem 1rem 1rem;
             background: #f8fafc;
             border: 2px solid #cbd5e1;
             border-radius: 0.5rem;
@@ -133,6 +133,7 @@
             gap: 0.5rem;
             align-items: center;
             padding: 0.75rem;
+            padding-left: 3rem;
             background: white;
             border: 2px solid #e5e7eb;
             border-radius: 0.5rem;
@@ -144,11 +145,6 @@
         .pair-container:hover {
             border-color: #0f6cbf;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .pair-container.drag-over {
-            border-color: #0f6cbf;
-            background: #eff6ff;
         }
         
         .pair-container.dragging-pair {
@@ -189,7 +185,7 @@
         
         .drag-handle {
             position: absolute;
-            left: -40px;
+            left: 8px;
             top: 50%;
             transform: translateY(-50%);
             width: 30px;
@@ -230,14 +226,6 @@
         .socket.empty {
             background: #f1f5f9;
             border: 2px dashed #94a3b8;
-        }
-        
-        .socket.drag-over {
-            background: #eff6ff !important;
-            border-color: #0f6cbf !important;
-            border-style: solid !important;
-            box-shadow: 0 0 0 3px rgba(15, 108, 191, 0.2);
-            transform: scale(1.02);
         }
         
         .delete-pair-btn {
@@ -495,42 +483,27 @@
                                 <div 
                                     class="pair-container"
                                     :class="{ 
-                                        'drag-over': draggingOverPair === pairIndex && draggingPairIndex === null,
                                         'dragging-pair': draggingPairIndex === pairIndex
                                     }"
                                     draggable="true"
                                     @dragstart="onDragPairStart($event, pairIndex)"
                                     @dragend="onDragPairEnd"
                                     @drop.prevent="onDropInPair($event, pairIndex)"
-                                    @dragover.prevent 
-                                    @dragenter.prevent="handlePairDragEnter(pairIndex)"
-                                    @dragleave="handlePairDragLeave">
+                                    @dragover.prevent>
                                     <div class="drag-handle" v-if="pair.object || pair.verb">⋮⋮</div>
                                     <div 
                                         class="socket"
-                                        :class="{
-                                            'has-content': pair.object,
-                                            'empty': !pair.object,
-                                            'drag-over': draggingOverSocket === `${pairIndex}-object` && draggingType === 'object' && draggingPairIndex === null
-                                        }"
+                                        :class="pair.object ? 'has-content' : 'empty'"
                                         @drop.prevent="onDropInSocket($event, pairIndex, 'object')"
-                                        @dragover.prevent 
-                                        @dragenter.prevent="handleSocketDragEnter(pairIndex, 'object')"
-                                        @dragleave="handleSocketDragLeave(`${pairIndex}-object`)">
+                                        @dragover.prevent>
                                         <span v-if="pair.object">{{ pair.object.label }}</span>
                                         <span v-else>Objekt</span>
                                     </div>
                                     <div 
                                         class="socket"
-                                        :class="{
-                                            'has-content': pair.verb,
-                                            'empty': !pair.verb,
-                                            'drag-over': draggingOverSocket === `${pairIndex}-verb` && draggingType === 'verb' && draggingPairIndex === null
-                                        }"
+                                        :class="pair.verb ? 'has-content' : 'empty'"
                                         @drop.prevent="onDropInSocket($event, pairIndex, 'verb')"
-                                        @dragover.prevent 
-                                        @dragenter.prevent="handleSocketDragEnter(pairIndex, 'verb')"
-                                        @dragleave="handleSocketDragLeave(`${pairIndex}-verb`)">
+                                        @dragover.prevent>
                                         <span v-if="pair.verb">{{ pair.verb.label }}</span>
                                         <span v-else>Verb</span>
                                     </div>
@@ -597,11 +570,9 @@
                     pairs: [],
                     draggingItem: null,
                     draggingType: null,
-                    draggingOverPair: null,
                     draggingPairIndex: null,
                     draggingPairOverIndex: null,
-                    dropZoneIndex: null,
-                    draggingOverSocket: null
+                    dropZoneIndex: null
                 };
             },
             computed: {
@@ -631,8 +602,6 @@
                     event.target.classList.remove('dragging');
                     this.draggingItem = null;
                     this.draggingType = null;
-                    this.draggingOverPair = null;
-                    this.draggingOverSocket = null;
                 },
                 onDrop(event, type) {
                     // Drop in pool - do nothing, cards stay in pool
@@ -651,23 +620,6 @@
                             pair.verb = { ...this.draggingItem };
                         }
                     }
-                    this.draggingOverPair = null;
-                },
-                handleSocketDragEnter(pairIndex, socketType) {
-                    // Only highlight if dragging matching type and not dragging a pair
-                    if (this.draggingPairIndex === null && 
-                        this.draggingType === socketType && 
-                        this.draggingItem) {
-                        this.draggingOverSocket = `${pairIndex}-${socketType}`;
-                    }
-                },
-                handleSocketDragLeave(socketId) {
-                    // Use timeout to prevent flickering when moving between elements
-                    setTimeout(() => {
-                        if (this.draggingOverSocket === socketId) {
-                            this.draggingOverSocket = null;
-                        }
-                    }, 10);
                 },
                 onDropInSocket(event, pairIndex, socketType) {
                     // Prevent dropping if dragging a pair
@@ -684,8 +636,6 @@
                             pair.verb = { ...this.draggingItem };
                         }
                     }
-                    this.draggingOverPair = null;
-                    this.draggingOverSocket = null;
                     event.stopPropagation(); // Prevent triggering pair drop
                 },
                 onDragPairStart(event, pairIndex) {
@@ -703,18 +653,6 @@
                     this.draggingPairIndex = null;
                     this.draggingPairOverIndex = null;
                     this.dropZoneIndex = null;
-                },
-                handlePairDragEnter(pairIndex) {
-                    // Only highlight if not dragging a pair
-                    if (this.draggingPairIndex === null) {
-                        this.draggingOverPair = pairIndex;
-                    }
-                },
-                handlePairDragLeave() {
-                    // Only clear if not dragging a pair
-                    if (this.draggingPairIndex === null) {
-                        this.draggingOverPair = null;
-                    }
                 },
                 handleDropZoneEnter(zoneIndex) {
                     if (this.draggingPairIndex !== null) {
