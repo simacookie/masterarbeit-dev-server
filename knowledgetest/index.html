@@ -150,22 +150,32 @@
             opacity: 0.5;
         }
         
-        .drop-zone {
-            min-height: 30px;
+        .drop-zone-container {
+            height: 50px;
             margin: 0.25rem 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .drop-zone {
+            width: 100%;
+            height: 100%;
             border-radius: 0.5rem;
             transition: all 0.3s ease;
             border: 2px dashed transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         
         .drop-zone.active {
             border-color: #0f6cbf;
             background: #eff6ff;
-            min-height: 80px;
             box-shadow: 0 0 0 3px rgba(15, 108, 191, 0.1);
         }
         
@@ -180,6 +190,96 @@
         
         .drop-zone.active .drop-zone-indicator {
             opacity: 1;
+        }
+        
+        .add-step-btn {
+            padding: 0;
+            background: #0f6cbf;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            top: 50%;
+            left: calc(50% + 33px);
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        
+        .add-step-btn:hover {
+            background: #3b80bd;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        .add-step-btn.first,
+        .add-step-btn.last {
+            left: calc(50%);
+            transform: translate(-50%, -50%);
+        }
+        
+        .add-step-btn.first:hover,
+        .add-step-btn.last:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        .add-step-btn-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -57%);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        
+        
+        .btn-text {
+            position: absolute;
+            left: calc(50% + 20px);
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            white-space: nowrap;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        
+        .arrow-connector {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #cbd5e1;
+            transform: translateX(-50%);
+        }
+        
+        .arrow-connector::after {
+            content: '';
+            position: absolute;
+            bottom: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #cbd5e1;
+        }
+        
+        .drop-zone-container.last {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
         
         .drag-handle {
@@ -467,15 +567,26 @@
                         <div class="sequence-title">Prozess</div>
                         <div class="sequence">
                             <template v-for="(pair, pairIndex) in pairs" :key="pair.id">
-                                <!-- Drop Zone before each pair -->
-                                <div 
-                                    class="drop-zone"
-                                    :class="{ 'active': draggingPairIndex !== null && dropZoneIndex === pairIndex }"
-                                    @drop.prevent="onDropInZone($event, pairIndex)"
-                                    @dragover.prevent 
-                                    @dragenter.prevent="handleDropZoneEnter(pairIndex)"
-                                    @dragleave="handleDropZoneLeave">
-                                    <div class="drop-zone-indicator">↓ Hier einfügen</div>
+                                <!-- Drop Zone Container before each pair -->
+                                <div class="drop-zone-container">
+                                    <div 
+                                        v-if="draggingPairIndex !== null"
+                                        class="drop-zone"
+                                        :class="{ 'active': dropZoneIndex === pairIndex }"
+                                        @drop.prevent="onDropInZone($event, pairIndex)"
+                                        @dragover.prevent 
+                                        @dragenter.prevent="handleDropZoneEnter(pairIndex)"
+                                        @dragleave="handleDropZoneLeave">
+                                        <div class="drop-zone-indicator">↓ Hier einfügen</div>
+                                    </div>
+                                    <div v-else style="position: relative; width: 100%; height: 100%;">
+                                        <div v-if="pairIndex > 0" class="arrow-connector"></div>
+                                        <button 
+                                            :class="['add-step-btn', pairIndex === 0 ? 'first' : '']"
+                                            @click="addPair(pairIndex)">
+                                            <div class="add-step-btn-content">+</div>
+                                        </button>
+                                    </div>
                                 </div>
                                 
                                 <div 
@@ -509,18 +620,29 @@
                                 </div>
                             </template>
                             
-                            <!-- Drop Zone at the end -->
-                            <div 
-                                class="drop-zone"
-                                :class="{ 'active': draggingPairIndex !== null && dropZoneIndex === pairs.length }"
-                                @drop.prevent="onDropInZone($event, pairs.length)"
-                                @dragover.prevent 
-                                @dragenter.prevent="handleDropZoneEnter(pairs.length)"
-                                @dragleave="handleDropZoneLeave">
-                                <div class="drop-zone-indicator">↓ Hier einfügen</div>
+                            <!-- Drop Zone Container at the end -->
+                            <div class="drop-zone-container last">
+                                <div 
+                                    v-if="draggingPairIndex !== null"
+                                    class="drop-zone"
+                                    :class="{ 'active': dropZoneIndex === pairs.length }"
+                                    @drop.prevent="onDropInZone($event, pairs.length)"
+                                    @dragover.prevent 
+                                    @dragenter.prevent="handleDropZoneEnter(pairs.length)"
+                                    @dragleave="handleDropZoneLeave">
+                                    <div class="drop-zone-indicator">↓ Hier einfügen</div>
+                                </div>
+                                <template v-else>
+                                    <div style="position: relative; width: 100%; height: 100%;">
+                                        <button 
+                                            class="add-step-btn last"
+                                            @click="addPair()">
+                                            <div class="add-step-btn-content">+</div>
+                                        </button>
+                                        <span class="btn-text">Schritt hinzufügen</span>
+                                    </div>
+                                </template>
                             </div>
-                            
-                            <button class="add-pair-btn" @click="addPair">+ Neues Paar hinzufügen</button>
                         </div>
                     </div>
                 </div>
@@ -696,12 +818,20 @@
                     this.draggingPairIndex = null;
                     this.dropZoneIndex = null;
                 },
-                addPair() {
-                    this.pairs.push({
+                addPair(index) {
+                    const newPair = {
                         id: Date.now(),
                         object: null,
                         verb: null
-                    });
+                    };
+                    
+                    if (index !== undefined && index !== null) {
+                        // Insert at specific index
+                        this.pairs.splice(index, 0, newPair);
+                    } else {
+                        // Add at the end (default behavior)
+                        this.pairs.push(newPair);
+                    }
                 },
                 deletePair(index) {
                     this.pairs.splice(index, 1);
