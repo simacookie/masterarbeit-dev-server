@@ -36,7 +36,7 @@
             flex: 1;
             min-width: 250px;
             position: sticky;
-            top: 100px;
+            top: 20px;
             align-self: flex-start;
             max-height: calc(100vh - 140px);
             overflow-y: auto;
@@ -45,8 +45,54 @@
         .pool-title {
             font-size: 1.125rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             color: #1a1a1a;
+        }
+        
+        .explanation-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            color: #475569;
+            line-height: 1.5;
+            gap: 3rem;
+        }
+        
+        .explanation-left,
+        .explanation-right {
+            flex: 1;
+            background: #f1f5f9;
+            padding: 0.75rem;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            background-color: #0f6cbf;
+            color: white;
+            font-size: 1.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            line-height: 1;
+            
+        }
+
+        .info-icon-content {
+            transform: translateY(-1.5px);
+        }
+        .explanation-text {
+            flex: 1;
         }
         
         .pool {
@@ -101,7 +147,7 @@
         .sequence {
             display: flex;
             flex-direction: column;
-            padding: 1rem 1rem 1rem 1rem;
+            padding: 1rem 1rem 1rem 4rem;
             background: #f8fafc;
             border: 2px solid #cbd5e1;
             border-radius: 0.5rem;
@@ -120,6 +166,15 @@
             position: relative;
             cursor: move;
             transition: all 0.2s ease;
+        }
+
+        .pair-number {
+            position: absolute;
+            left: -2rem;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #cbd5e1;
         }
         
         .pair-container:hover {
@@ -145,30 +200,37 @@
             height: 100%;
             border-radius: 0.5rem;
             transition: all 0.3s ease;
-            border: 2px dashed transparent;
+            border: 2px dashed #0f6dbf00;
+            background: rgba(239, 246, 255, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
             position: absolute;
             top: 0;
             left: 0;
+            opacity: 1;
         }
         
+        .drop-zone:hover,
         .drop-zone.active {
+            opacity: 1;
             border-color: #0f6cbf;
             background: #eff6ff;
             box-shadow: 0 0 0 3px rgba(15, 108, 191, 0.1);
+            border: 2px dashed #0f6cbf;
+
         }
         
         .drop-zone-indicator {
             color: #0f6cbf;
             font-size: 0.875rem;
             font-weight: 600;
-            opacity: 0;
+            opacity: 0.7;
             transition: opacity 0.2s ease;
             pointer-events: none;
         }
         
+        .drop-zone:hover .drop-zone-indicator,
         .drop-zone.active .drop-zone-indicator {
             opacity: 1;
         }
@@ -224,7 +286,7 @@
         
         .btn-text {
             position: absolute;
-            left: calc(50% + 20px);
+            left: calc(50% + 23px);
             top: 50%;
             transform: translateY(-50%);
             font-size: 1rem;
@@ -510,12 +572,29 @@
             <div class="main-content">
                 <div class="content-header">
                     <h1 class="title">Wissenstest</h1>
-                    <p class="subtitle">Intramuskuläre Injektion</p>
+                    <p class="subtitle">Baue den Pflegeprozess vom Ausmessen der Injektionsstelle bis hin zum wegwerfen der Spritze nach.</p>
                 </div>
                 
                 <div class="test-container">
+                    <div style="width: 100%; margin-bottom: 1.5rem;">
+                        <div class="explanation-container">
+                            <div class="explanation-left">
+                                <span class="info-icon" >
+                                    <div class="info-icon-content">ℹ</div>
+                                </span>
+                                <span class="explanation-text">Ein Schritt wird aus einem Objekt und einer dazugehörigen Aktion zusammengebaut. Beispiel: "Handschuhe" + "anziehen"</span>
+                            </div>
+                            <div class="explanation-right">
+                                <span class="info-icon">
+                                    <div class="info-icon-content">ℹ</div>
+                                </span>
+                                <span class="explanation-text">Rechts sollst du den Pflegeprozess zusammenbauen, indem du Objekte und Aktionen per Drag & Drop in die Sockel legst. Du kannst die die Reihenfolge der Schritte auch nachträglich ändern, indem du die Schritte per Drag & Drop verschiebst.</span>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="pool-section">
-                        <div class="pool-title">Objekte (Nomen)</div>
+                        <div class="pool-title">Objekte</div>
                         <div class="pool" @drop.prevent="onDrop($event, 'object')" @dragover.prevent @dragenter.prevent>
                             <div 
                                 v-for="object in objects" 
@@ -530,7 +609,7 @@
                     </div>
                     
                     <div class="pool-section">
-                        <div class="pool-title">Aktionen (Verben)</div>
+                        <div class="pool-title">Aktionen</div>
                         <div class="pool" @drop.prevent="onDrop($event, 'verb')" @dragover.prevent @dragenter.prevent>
                             <div 
                                 v-for="verb in verbs" 
@@ -580,6 +659,7 @@
                                     @dragend="onDragPairEnd"
                                     @drop.prevent="onDropInPair($event, pairIndex)"
                                     @dragover.prevent>
+                                    <div class="pair-number">{{ pairIndex + 1 }}.</div>
                                     <div class="drag-handle" v-if="pair.object || pair.verb">⋮⋮</div>
                                     <div 
                                         class="socket"
@@ -595,7 +675,7 @@
                                         @drop.prevent="onDropInSocket($event, pairIndex, 'verb')"
                                         @dragover.prevent>
                                         <span v-if="pair.verb">{{ pair.verb.label }}</span>
-                                        <span v-else>Verb</span>
+                                        <span v-else>Aktion</span>
                                     </div>
                                     <button class="delete-pair-btn" @click="deletePair(pairIndex)">×</button>
                                 </div>
@@ -648,18 +728,33 @@
             data() {
                 return {
                     objects: [
-                        { id: 1, label: 'Hände', code: 'a' },
-                        { id: 2, label: 'Handschuhe', code: 'b' },
-                        { id: 3, label: 'Material', code: 'c' },
-                        { id: 4, label: 'Spritze', code: 'd' },
-                        { id: 5, label: 'Injektionsstelle', code: 'e' }
+                        { id: 0, label: 'Handschuhe', code: 'q' },
+                        { id: 1, label: 'Tupfer', code: 'w' },
+                        { id: 2, label: 'Hände', code: 'k' },
+                        { id: 3, label: 'Kolben der Spritze', code: 'e' },
+                        { id: 4, label: 'Spritze und Tupfer', code: 'a' },
+                        { id: 5, label: 'Arzneimittel', code: 'j' },
+                        { id: 6, label: 'Schutzkappe', code: 't' },
+                        { id: 7, label: 'Kanüle', code: 'r' },
+                        { id: 8, label: 'Linker Mittelfinger und linker Zeigefinger', code: 'h' },
+                        { id: 9, label: 'Linke Hand', code: 'g' },
+                        { id: 10, label: 'Injektionsstelle', code: 'd' }
                     ],
                     verbs: [
-                        { id: 1, label: 'desinfizieren', code: 'A' },
-                        { id: 2, label: 'anziehen', code: 'B' },
-                        { id: 3, label: 'vorbereiten', code: 'C' },
-                        { id: 4, label: 'aufziehen', code: 'D' },
-                        { id: 5, label: 'desinfizieren', code: 'E' }
+                        { id: 1, label: 'markieren', code: 'G' },
+                        { id: 2, label: 'mit Pflaster abdecken', code: 'B' },
+                        { id: 3, label: 'desinfizieren', code: 'L' },
+                        { id: 4, label: 'ertasten vorderen oberen Darmbeinstachel und den Darmbeinkamm', code: 'K' },
+                        { id: 5, label: 'zur Aspiration leicht zurückziehen', code: 'A' },
+                        { id: 6, label: 'anziehen', code: 'D' },
+                        { id: 7, label: 'von Kanüle entfernen', code: 'N' },
+                        { id: 8, label: 'aus der Haut ziehen', code: 'F' },
+                        { id: 9, label: 'mit Tupfer komprimieren', code: 'I' },
+                        { id: 10, label: 'Im Spritzenabwurf abstreifen', code: 'H' },
+                        { id: 11, label: 'in Muskel stechen', code: 'J' },
+                        { id: 12, label: 'in den Mülleimer werfen', code: 'C' },
+                        { id: 13, label: 'injizieren', code: 'E' },
+                        { id: 14, label: 'bauchwärts drehen', code: 'O' },
                     ],
                     pairs: [],
                     draggingItem: null,
