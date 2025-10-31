@@ -598,7 +598,7 @@
                         <div class="pool" @drop.prevent="onDrop($event, 'object')" @dragover.prevent @dragenter.prevent>
                             <div 
                                 v-for="object in objects" 
-                                :key="object.id"
+                                :key="object.code"
                                 class="card"
                                 draggable="true"
                                 @dragstart="onDragStart($event, 'object', object)"
@@ -613,7 +613,7 @@
                         <div class="pool" @drop.prevent="onDrop($event, 'verb')" @dragover.prevent @dragenter.prevent>
                             <div 
                                 v-for="verb in verbs" 
-                                :key="verb.id"
+                                :key="verb.code"
                                 class="card"
                                 draggable="true"
                                 @dragstart="onDragStart($event, 'verb', verb)"
@@ -660,7 +660,7 @@
                                     @drop.prevent="onDropInPair($event, pairIndex)"
                                     @dragover.prevent>
                                     <div class="pair-number">{{ pairIndex + 1 }}.</div>
-                                    <div class="drag-handle" v-if="pair.object || pair.verb">⋮⋮</div>
+                                    <div class="drag-handle">⋮⋮</div>
                                     <div 
                                         class="socket"
                                         :class="pair.object ? 'has-content' : 'empty'"
@@ -714,8 +714,10 @@
                 </div>
                 
                 <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn" @click="submitResult" style="margin-right: 1rem;">Ergebnis absenden</button>
                     <button class="btn btn-back" @click="goBack">Zurück zur Startseite</button>
                 </div>
+
             </div>
             
         </div>
@@ -727,35 +729,8 @@
         createApp({
             data() {
                 return {
-                    objects: [
-                        { id: 0, label: 'Handschuhe', code: 'q' },
-                        { id: 1, label: 'Tupfer', code: 'w' },
-                        { id: 2, label: 'Hände', code: 'k' },
-                        { id: 3, label: 'Kolben der Spritze', code: 'e' },
-                        { id: 4, label: 'Spritze und Tupfer', code: 'a' },
-                        { id: 5, label: 'Arzneimittel', code: 'j' },
-                        { id: 6, label: 'Schutzkappe', code: 't' },
-                        { id: 7, label: 'Kanüle', code: 'r' },
-                        { id: 8, label: 'Linker Mittelfinger und linker Zeigefinger', code: 'h' },
-                        { id: 9, label: 'Linke Hand', code: 'g' },
-                        { id: 10, label: 'Injektionsstelle', code: 'd' }
-                    ],
-                    verbs: [
-                        { id: 1, label: 'markieren', code: 'G' },
-                        { id: 2, label: 'mit Pflaster abdecken', code: 'B' },
-                        { id: 3, label: 'desinfizieren', code: 'L' },
-                        { id: 4, label: 'ertasten vorderen oberen Darmbeinstachel und den Darmbeinkamm', code: 'K' },
-                        { id: 5, label: 'zur Aspiration leicht zurückziehen', code: 'A' },
-                        { id: 6, label: 'anziehen', code: 'D' },
-                        { id: 7, label: 'von Kanüle entfernen', code: 'N' },
-                        { id: 8, label: 'aus der Haut ziehen', code: 'F' },
-                        { id: 9, label: 'mit Tupfer komprimieren', code: 'I' },
-                        { id: 10, label: 'Im Spritzenabwurf abstreifen', code: 'H' },
-                        { id: 11, label: 'in Muskel stechen', code: 'J' },
-                        { id: 12, label: 'in den Mülleimer werfen', code: 'C' },
-                        { id: 13, label: 'injizieren', code: 'E' },
-                        { id: 14, label: 'bauchwärts drehen', code: 'O' },
-                    ],
+                    objects: [],
+                    verbs: [],
                     pairs: [],
                     draggingItem: null,
                     draggingType: null,
@@ -828,12 +803,7 @@
                     event.stopPropagation(); // Prevent triggering pair drop
                 },
                 onDragPairStart(event, pairIndex) {
-                    // Only allow dragging if pair has content
-                    const pair = this.pairs[pairIndex];
-                    if (!pair.object && !pair.verb) {
-                        event.preventDefault();
-                        return;
-                    }
+                    // Allow dragging even if pair is empty
                     this.draggingPairIndex = pairIndex;
                     event.dataTransfer.effectAllowed = 'move';
                     event.dataTransfer.setData('text/plain', pairIndex.toString());
@@ -905,11 +875,62 @@
                 deletePair(index) {
                     this.pairs.splice(index, 1);
                 },
+                  deletePair(index) {
+                    this.pairs.splice(index, 1);
+                },
+                loadConfig() {
+                    fetch('/api/knowledge-test-config')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            this.objects = data.objects || [];
+                            this.verbs = data.verbs || [];
+                        })
+                        .catch(error => {
+                            console.error('Error loading config:', error);
+                            alert('Fehler beim Laden der Konfiguration. Bitte Seite neu laden.');
+                        });
+                },
+                submitResult() {
+                    if (!this.resultString) {
+                        alert('Bitte erstelle zuerst eine Sequenz.');
+                        return;
+                    }
+                    
+                    fetch('/api/knowledge-test-answer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            user_id: 123,
+                            answer: this.resultString })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert(JSON.stringify(data));
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Fehler beim Übermitteln des Ergebnisses. Bitte versuchen Sie es erneut.');
+                    });
+                },
                 goBack() {
                     window.location.href = '/';
                 }
             },
             mounted() {
+                // Load configuration from API
+                this.loadConfig();
                 // Initialize with one empty pair
                 this.addPair();
             }
