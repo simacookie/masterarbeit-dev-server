@@ -188,6 +188,81 @@
                 font-size: 1rem;
             }
         }
+        
+        /* Consent Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        
+        .modal-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #4b5563;
+            margin-bottom: 2rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .modal-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-btn-cancel {
+            background-color: #0f6cbf;
+            color: white;
+        }
+        
+        .modal-btn-cancel:hover {
+            background-color: #0d5aa3;
+        }
+        
+        .modal-btn-approve {
+            background-color: #0f6cbf;
+            color: white;
+        }
+        
+        .modal-btn-approve:hover {
+            background-color: #0d5aa3;
+        }
     </style>
 </head>
 <body>
@@ -210,10 +285,109 @@
         </div>
     </div>
     
+    <!-- Consent Modal -->
+    <div id="consentModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title">Datenerfassung - Einwilligung</h2>
+            <p class="modal-text">
+                Möchten Sie zustimmen, dass die bei der Durchführung dieser In-the-wild-Studie erfassten Daten hochgeladen werden dürfen? Die Daten werden anonymisiert. Es wird eine anonyme Benutzer-ID als Cookie in ihrem Browser gespeichert.
+            </p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="handleConsentReject()">Ablehnen</button>
+                <button class="modal-btn modal-btn-approve" onclick="handleConsentApprove()">Zustimmen</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
+        // Cookie handling functions
+        function setCookie(name, value, days) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+        }
+        
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+        
+        function createNewUser() {
+            return fetch('/api/create-new-user', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('User created:', data);
+                // Save user_id to cookie (handle different possible response formats)
+                const userId = data.user_id || data.id || data.userId || data.userID;
+                if (userId) {
+                    setCookie('user_id', userId, 365); // Store for 1 year
+                } else {
+                    console.warn('No user_id found in API response:', data);
+                }
+                return data;
+            })
+            .catch(error => {
+                console.error('Error creating user:', error);
+                throw error;
+            });
+        }
+
+        function showConsentModal() {
+            const modal = document.getElementById('consentModal');
+            modal.classList.add('show');
+        }
+        
+        function hideConsentModal() {
+            const modal = document.getElementById('consentModal');
+            modal.classList.remove('show');
+        }
+        
+        function handleConsentApprove() {
+            hideConsentModal();
+            // Create user and save to cookie, then redirect
+            createNewUser()
+                .then(() => {
+                    // Redirect to the VR nugget application
+                    window.location.href = '/vr-nugget/';
+                })
+                .catch(error => {
+                    console.error('Error creating user:', error);
+                    alert('Fehler beim Erstellen der Benutzer-ID. Bitte versuchen Sie es erneut.');
+                });
+        }
+        
+        function handleConsentReject() {
+            hideConsentModal();
+            // User rejected, don't proceed with evaluation
+        }
+
         function startEvaluation() {
-            // Redirect to the VR nugget application
-            window.location.href = '/vr-nugget/';
+            // Check if user_id cookie exists
+            const userId = getCookie('user_id');
+            
+            if (!userId) {
+                // No cookie found, show consent modal
+                showConsentModal();
+            } else {
+                // Cookie exists, redirect directly
+                window.location.href = '/vr-nugget/';
+            }
         }
         
         function startKnowledgeTest() {
