@@ -907,7 +907,7 @@
                             alert('Fehler beim Laden der Konfiguration. Bitte Seite neu laden.');
                         });
                 },
-                submitResult() {
+                async submitResult() {
                     if (!this.resultString) {
                         alert('Bitte erstelle zuerst eine Sequenz.');
                         return;
@@ -920,28 +920,35 @@
                         return;
                     }
                     
-                    fetch('/api/knowledge-test-answer', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ 
-                            user_id: userId,
-                            answer: this.resultString })
-                    })
-                    .then(response => {
+                    try {
+                        const response = await fetch('/api/knowledge-test-answer', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ 
+                                user_id: userId,
+                                answer: this.resultString })
+                        });
+                        
+                        if (response.status === 409) {
+                            const errorData = await response.json();
+                            if (errorData.errorCode === "DUPLICATE_ENTRY") {
+                                alert('Du hast bereits ein Ergebnis abgeschickt.');
+                                return;
+                            }
+                        }
+                        
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
                         }
-                        return response.json();
-                    })
-                    .then(data => {
+                        
+                        const data = await response.json();
                         alert(JSON.stringify(data));
-                    })
-                    .catch(error => {
+                    } catch (error) {
                         console.error('Error:', error);
                         alert('Fehler beim Übermitteln des Ergebnisses. Bitte versuchen Sie es erneut.');
-                    });
+                    }
                 },
                 goBack() {
                     window.location.href = '/';
