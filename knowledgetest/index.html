@@ -707,12 +707,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="result-section">
-                    <div class="result-title">Sequenz:</div>
-                    <div class="result-string">{{ resultString || '(leer)' }}</div>
-                </div>
-                
+                                
                 <div style="text-align: center; margin-top: 2rem;">
                     <button class="btn" @click="submitResult" style="margin-right: 1rem;">Ergebnis absenden</button>
                     <button class="btn btn-back" @click="goBack">Zurück zur Startseite</button>
@@ -916,7 +911,7 @@
                     // Get user_id from cookie
                     const userId = getCookie('user_id');
                     if (!userId) {
-                        alert('Keine Benutzer-ID gefunden. Bitte starten Sie die Evaluation von der Startseite.');
+                        alert('Keine Benutzer-ID gefunden. Entweder hast du die Datenerfassung beim Start der Evaluation abgelehnt oder du hast die Evaluation nicht von der Startseite gestartet. Bitte starte die Evaluation von der Startseite und akzeptiere die Datenerfassung, um deine Antwort abzuschicken.');
                         return;
                     }
                     
